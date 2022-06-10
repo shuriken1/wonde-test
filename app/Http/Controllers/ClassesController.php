@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\WondeConfigMissingException;
 use Illuminate\Http\Request;
 use App\Services\WondeService;
 use App\Http\Requests\ShowClassRequest;
@@ -47,7 +48,11 @@ class ClassesController extends Controller
      */
     public function show(ShowClassRequest $request, $id)
     {
-        $wonde = new WondeService();
+        try {
+            $wonde = new WondeService();
+        } catch (WondeConfigMissingException $e) {
+            return view('errors.config-missing');
+        }
         $class = $wonde->getClassWithStudents($id);
 
         return view('classes.show', ['class' => $class]);

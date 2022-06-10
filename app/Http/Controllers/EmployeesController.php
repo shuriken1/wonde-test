@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Services\WondeService;
 use App\Http\Requests\ShowEmployeeRequest;
+use App\Exceptions\WondeConfigMissingException;
 
 class EmployeesController extends Controller
 {
@@ -15,7 +16,12 @@ class EmployeesController extends Controller
      */
     public function index()
     {
-        $wonde = new WondeService();
+        try {
+            $wonde = new WondeService();
+        } catch (WondeConfigMissingException $e) {
+            return view('errors.config-missing');
+        }
+        
         $employees = $wonde->getEmployees();
 
         return view('employees.index', ['employees' => $employees]);
@@ -50,7 +56,12 @@ class EmployeesController extends Controller
      */
     public function show(ShowEmployeeRequest $request, $id)
     {
-        $wonde = new WondeService();
+        try {
+            $wonde = new WondeService();
+        } catch (WondeConfigMissingException $e) {
+            return view('errors.config-missing');
+        }
+        
         $employee = $wonde->getEmployeeWithClasses($id);
 
         return view('employees.show', ['employee' => $employee]);
