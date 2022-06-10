@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Exceptions\WondeCannotConnectException;
+use App\Exceptions\WondeConfigMissingException;
 
 class WondeService
 {
@@ -11,6 +11,12 @@ class WondeService
 
     public function __construct()
     {
+        $token = config('wonde.token');
+        $schoolId = config('wonde.school_id');
+        if(!$token || !$schoolId) {
+            throw new WondeConfigMissingException();
+        }
+
         $this->client = new \Wonde\Client(config('wonde.token'));
         $this->school = $this->client->school(config('wonde.school_id'));
     }
